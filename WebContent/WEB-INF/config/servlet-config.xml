@@ -1,0 +1,110 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation=" 
+        http://www.springframework.org/schema/beans     
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc 
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx 
+        http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+	<context:component-scan base-package="questionrepo.controller" />
+	<mvc:annotation-driven />
+	<mvc:resources mapping="resources/**" location="/resources/"></mvc:resources>
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+		p:prefix="/WEB-INF/jsp/" p:suffix=".jsp" />	
+
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3308/questionsrepo" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+
+	<bean id="hibernate4AnnotatedSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>questionrepo.domain.Type</value>
+				<value>questionrepo.domain.Level</value>
+				<value>questionrepo.domain.Skill</value>
+				<value>questionrepo.domain.Category</value>
+				<value>questionrepo.domain.Question</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect
+				</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="typeDAO" class="questionrepo.dao.TypeDAOImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	<bean id="typeService" class="questionrepo.services.TypeServiceImpl">
+		<property name="typeDAO" ref="typeDAO"></property>
+	</bean>  
+	<bean id="typeController" class="questionrepo.controller.TypeController">
+		<property name="typeService" ref="typeService"></property>
+	</bean>
+
+	<bean id="categoryDAO" class="questionrepo.dao.CategoryDAOImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	<bean id="categoryService" class="questionrepo.services.CategoryServiceImpl">
+		<property name="categoryDAO" ref="categoryDAO"></property>
+	</bean>  
+	<bean id="categoryController" class="questionrepo.controller.CategoryController">
+		<property name="categoryService" ref="categoryService"></property>
+	</bean>
+
+	<bean id="levelDAO" class="questionrepo.dao.LevelDAOImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	<bean id="levelService" class="questionrepo.services.LevelServiceImpl">
+		<property name="levelDAO" ref="levelDAO"></property>
+	</bean>  
+	<bean id="levelController" class="questionrepo.controller.LevelController">
+		<property name="levelService" ref="levelService"></property>
+	</bean>
+
+	<bean id="skillDAO" class="questionrepo.dao.SkillDAOImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	<bean id="skillService" class="questionrepo.services.SkillServiceImpl">
+		<property name="skillDAO" ref="skillDAO"></property>
+	</bean>  
+	<bean id="skillController" class="questionrepo.controller.SkillController">
+		<property name="skillService" ref="skillService"></property>
+	</bean>
+	
+	<bean id="questionDAO" class="questionrepo.dao.QuestionDAOImpl">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	<bean id="questionService" class="questionrepo.services.QuestionServiceImpl">
+		<property name="questionDAO" ref="questionDAO"></property>
+	</bean>   
+	<bean id="questionController" class="questionrepo.controller.QuestionController">
+		<property name="questionService" ref="questionService"></property>
+	</bean>
+	
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</bean>
+	 
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+</beans>
